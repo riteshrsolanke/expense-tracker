@@ -1,0 +1,49 @@
+{% extends 'expenses/base.html' %}
+
+{% block content %}
+<h2>Monthly Expenses</h2>
+
+<!-- Canvas for Chart.js -->
+<canvas id="myChart" width="100" height="100"></canvas>
+
+<!-- Include Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Serialize Django variables safely -->
+{{ labels|json_script:"labels-data" }}
+{{ totals|json_script:"totals-data" }}
+
+<script>
+    // Parse the JSON data from Django
+    const labels = JSON.parse(document.getElementById('labels-data').textContent);
+    const totals = JSON.parse(document.getElementById('totals-data').textContent);
+
+    // Prepare chart data
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: 'Total Expenses',
+            data: totals,
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    // Chart configuration
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    // Render the chart
+    new Chart(document.getElementById('myChart'), config);
+</script>
+{% endblock %}
